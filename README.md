@@ -1,1 +1,1 @@
-# Estudos-Java-Multithread-Paralelismo-e-Concorr-ncia
+# Estudos-Java-Multithread-Paralelismo-e-Concorrência
