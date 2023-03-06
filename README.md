@@ -152,7 +152,7 @@ Também temos várias outras versões de syncronized:
 - synchronizedMap
 - synchronizedSet
 
-## **Aula 03 - Concorrência em Java - Não usar Syncronized com List ou Map - Parte 2**
+## **Aula 03 - Concorrência em Java - Coleções para concorrência - Parte 2**
 ### **Coleções para concorrência**
 **CopyOnWriteArrayList**
 
@@ -177,3 +177,12 @@ Uma boa alternativa em comparação com a solução para lista, pois essas class
 **LinkedBlockingDeque**
 
 Também temos a classe LinkedBlockingDeque, uma fila que permite adicionar ou remover elementos tanto no final, quanto no início da fila. Classe thread safe.
+
+## **Aula 03 - Concorrência em Java - Classes Atômicas - Parte 3**
+### **Classes Atômicas**
+
+Com a classe **_AtomicInteger_**, não precisamos sincronizar o método run, pois ela executa métodos atômicos, ou seja, os seus métodos executaram de uma vez só, não há como uma outra atrapalhar a 1ª thread durante sua execução. Não é uma operação sincronizada, mas opera como. Temos outras classes atômicas:
+- AtomicLong
+- AtomicDoble
+- AtomicBoolean
+- AtomicReference
