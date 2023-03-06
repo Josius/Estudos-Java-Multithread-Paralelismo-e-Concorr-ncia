@@ -1,4 +1,5 @@
 # **Estudos Java Multithread Paralelismo e Concorrência**
+## **Fonte de estudos: https://www.youtube.com/playlist?list=PLuYctAHjg89YNXAXhgUt6ogMyPphlTVQG**
 ### **Execução Monothread**
 Execução seqüêncial das linhas do código. Ou seja, se tivermos duas execuções de programas diferentes, um processo suportará somente um programa em seu espaço de endereçamento.
 ### **Execução Multithread**
