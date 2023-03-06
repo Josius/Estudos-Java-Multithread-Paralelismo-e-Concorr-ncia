@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Aula03SincronizacaoEmColecoes {
+public class Aula03SincronizacaoEmColecoesParteUm {
 
     private static List<String> lista = new ArrayList<>();
     public static void main(String[] args) throws InterruptedException {

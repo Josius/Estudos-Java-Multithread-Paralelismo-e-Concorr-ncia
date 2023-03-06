@@ -153,3 +153,27 @@ Também temos várias outras versões de syncronized:
 - synchronizedSet
 
 ## **Aula 03 - Concorrência em Java - Não usar Syncronized com List ou Map - Parte 2**
+### **Coleções para concorrência**
+**CopyOnWriteArrayList**
+
+Outra forma de sincronizar a lista:
+> `private static List<String> lista = new CopyOnWriteArrayList<>();`
+
+Classe CopyOnWriteArrayList<>(); é thread safe. É uma classe segura  para cenários multithread, com várias threads acessando a coleção, sem causar um efeito colateral. Entretanto, essa é uma classe pesada, pois sempre que estivermos modificando a lista, a classe faz uma cópia do array inteiro, com todos os elementos da lista. Isso não é performático, mas é uma classe boa pois é thread safe. Se houver muita alteração na lista, como .add() ou .remove(), é melhor não usar essa classe. É ideal para leitura, como .get() e .indexOf().
+
+**ConcurrentHashMap**
+
+Semelhante ao problema descrito no início da aula, com Map nós temos o mesmo problema, então para contornar isso, usamos a classe ConcurrentHashMap:
+> `private static Map<Integer, String> mapa = new ConcurrentHashMap<>();`
+
+Ela é thread safe e se comporta da forma ideal para não gerar erros. Sua desvantagem é que é um pouco mais lenta pois ela é sincronizada internamente.
+
+**BlockingQueue e LinkedBlockingQueue**
+
+> `private static BlockingQueue<String> fila = new LinkedBlockingQueue<>();`
+
+Uma boa alternativa em comparação com a solução para lista, pois essas classes são thread safe. Um outro ponto é com relação ao uso da lista. Se acaso estivermos usando operações que inserem e retiram elementos do coleção constantemente, usar uma fila pode ser uma solução mais interessante, ao invés de usar uma lista. Afinal, uma fila adiciona elementos ao final da fila e remove elementos do início da fila. Também podemos limitar o tamanho da fila.
+
+**LinkedBlockingDeque**
+
+Também temos a classe LinkedBlockingDeque, uma fila que permite adicionar ou remover elementos tanto no final, quanto no início da fila. Classe thread safe.
