@@ -119,8 +119,37 @@ public void run() {
             }
 ```            
 > código que não ocorre a concorrência:
+```
             double jElevadoA10 = Math.pow(j, 100);
             double sqrt = Math.sqrt(jElevadoA10);
             System.out.println(sqrt);
         }
 ```
+
+## **Aula 03 - Concorrência em Java - Não usar Syncronized com List ou Map - Parte 1**
+### **Método .sleep()**
+> `Thread.sleep(milissegundos);`
+
+Temos a thread principal, que no caso é a main e se criarmos várias threads, teremos a thread main mais essas outras threads criadas. Entretanto, pode ocorrer que todas elas ainda estão sendo processadas e o programa continue o código, ou seja, a thread main continue a execução, resultando em uma saída sem todos os resultados das outras threads. Neste caso, usamos o método .sleep() para que a thread main aguarde um determinado tempo, permitindo assim que as outras threads sejam concluídas.
+
+Porém, quando usamos List, mesmo usando o método .sleep(), pode ocorrer de que o resultado de todas as threads sejam adicionadas na List e a saída ainda esteja faltando algum resultado. Isso é um erro que ocorre na List, sendo uma Collection a não ser usada com Threads. Para resolver isso sincronizamos coleções.
+
+### **Sincronizando coleções**
+Sobreescrevendo a lista com uma versão sincronizada:
+```
+List<String> lista = new ArrayList<>();
+lista = Collections.synchronizedList(lista);
+```
+ou podemos usar:
+```
+List<String> lista = Collections.synchronizedList(new ArrayList<>());
+```
+Com isso, a lista será acessada em algumas operações por apenas uma única thread.
+
+Também temos várias outras versões de syncronized:
+- synchronizedList
+- synchronizedCollection
+- synchronizedMap
+- synchronizedSet
+
+## **Aula 03 - Concorrência em Java - Não usar Syncronized com List ou Map - Parte 2**
