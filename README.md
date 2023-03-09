@@ -1,5 +1,5 @@
 # **Estudos Java Multithread Paralelismo e Concorrência**
-## **Fonte de estudos: https://www.youtube.com/playlist?list=PLuYctAHjg89YNXAXhgUt6ogMyPphlTVQG**
+## **Fonte de estudos: [RinaldoDev - Multithread, Paralelismo e Concorrência](https://www.youtube.com/playlist?list=PLuYctAHjg89YNXAXhgUt6ogMyPphlTVQG)**
 ### **Execução Monothread**
 Execução seqüêncial das linhas do código. Ou seja, se tivermos duas execuções de programas diferentes, um processo suportará somente um programa em seu espaço de endereçamento.
 ### **Execução Multithread**
@@ -186,3 +186,34 @@ Com a classe **_AtomicInteger_**, não precisamos sincronizar o método run, poi
 - AtomicDoble
 - AtomicBoolean
 - AtomicReference
+
+## **Aula 04 - Volatile e Yield**
+### **Método .yield()**
+> `Thread.yield();`
+- método que avisa ao processador que não há trabalho a ser feito naquele momento, logo o processador pausa a execução da thread e diponibiliza o tempo de processador dessa thread para outra. Depois o processador pode retornar para essa thread que verificar se há a ser feito. A thread não para, somente pausa.
+
+### **Método .getState()**
+> `thread.getState();`
+- método que retorna o estado atual da thread. Possíveis estados:
+    - NEW - ainda não iniciou seu estado
+    - RUNNABLE - está executando na JVM
+    - BLOCKED - está esperando um monitor lock
+    - WAITING - esperando indefinidamente outra thread executar uma ação
+    - TIMED_WAITING - esperando por um tempo determinado outra thread executar uma ação
+    - TERMINATED - uma que terminou sua execução
+### **Enum State.< Estado >**
+> `State.TERMINATED;`
+- enum que retorna algum dos 6 estados citados acima. 
+- é interessante usar o .getState() junto com State.< Estado > para fazer alguma verificação booleana
+
+### [Explicação da execução do código da classe Aula04YieldEVolatileParteDois sem a palavra reservada volatile - até 10:35](https://youtu.be/4bH-XilmJoI?list=PLuYctAHjg89YNXAXhgUt6ogMyPphlTVQG&t=542)
+
+### **Palavra reservada volatile**
+- indica para o programa não confiar no que está no cachê local dentro do processador. Escreva e leia esse dado sempre direto da memória ram. Não use o cachê local para acessar esse valor. Isso fará que ao ler a variável, sempre será lido o valor mais recente
+- em geral não precisamos usar essa palavra reservada
+- se usarmos ela, estaremos deixando ler o valor que está em cachê no processador para acessar a memória ram, logo, o programa se torna mais lento
+- mas podemos também verificar que podemos estar perdendo um pouco de performance, mas ao mesmo tempo, como no exemplo, estamos usando paralelismo, o que incrementa a performance muito mais que a perca por usar volatile
+
+### [Explicação da palavra reservada volatile - até 16:20](https://youtu.be/4bH-XilmJoI?list=PLuYctAHjg89YNXAXhgUt6ogMyPphlTVQG&t=680)
+
+
