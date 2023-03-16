@@ -107,19 +107,19 @@ Mas dessa forma, estamos sincronizando toda a classe e, basicamente, somente uma
 #### **Exemplo mais próximo do real**
 No código de exemplo, isolamos o uso do bloco syncronized apenas para quando existe a concorrência. No caso, quando será acessada a variável global. Se o recurso está sendo concorrido, usamos o syncronized, do contrário, o restante do código não precisa de syncronized.
 > código que não ocorre a concorrência:
-```
+```java
 public void run() {
             int j;
 ```
 > recurso que ocorre a concorrência (variavelGlobal):
-```
+```java
             synchronized(this){
                 variavelGlobal++;
                 j = variavelGlobal * 2;
             }
 ```            
 > código que não ocorre a concorrência:
-```
+```java
             double jElevadoA10 = Math.pow(j, 100);
             double sqrt = Math.sqrt(jElevadoA10);
             System.out.println(sqrt);
@@ -136,12 +136,12 @@ Porém, quando usamos List, mesmo usando o método .sleep(), pode ocorrer de que
 
 ### **Sincronizando coleções**
 Sobreescrevendo a lista com uma versão sincronizada:
-```
+```java
 List<String> lista = new ArrayList<>();
 lista = Collections.synchronizedList(lista);
 ```
 ou podemos usar:
-```
+```java
 List<String> lista = Collections.synchronizedList(new ArrayList<>());
 ```
 Com isso, a lista será acessada em algumas operações por apenas uma única thread.
@@ -217,3 +217,69 @@ Com a classe **_AtomicInteger_**, não precisamos sincronizar o método run, poi
 ### [Explicação da palavra reservada volatile - até 16:20](https://youtu.be/4bH-XilmJoI?list=PLuYctAHjg89YNXAXhgUt6ogMyPphlTVQG&t=680)
 
 
+## **Aula 05 - Executores - Parte Um**
+### **SingleThread com Runnable**
+- semelhante a criar um Thread; instanciamos um objeto, passamos um runnable e executamos o executor
+- precisamos chamar o método .shutdown(), do contrário o programa continua executando
+- porém, ao chamar prematuramente o .shutdown(), ele pode não terminar de executar a tarefa
+- para evitar isso, chamamos o .awaitTermination(timeout, unit) para esperar um determinado tempo antes de chamar o .shutdown()
+- o .shutdown() também indica para não receber novas tarefas
+
+Modo elegante de usar:
+~~~java
+ExecutorService executor = null;
+        try {
+            executor = Executors.newSingleThreadExecutor();
+            executor.execute(new Tarefa());
+            executor.execute(new Tarefa());
+            executor.execute(new Tarefa());
+            executor.awaitTermination(5, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            throw e;
+        }finally{
+            if (executor != null){ 
+                executor.shutdown();
+            }
+        }
+~~~
+
+Uma grande diferença entre Thread e Executor é que para executar várias tarefas precisamos criar várias threads, com executor podemos usar somente um para várias tarefas.
+
+- há também o método .shutdownNow(), o qual faz uma parada sem esperar que as tarefas sejam terminadas
+- também podemos usar o método .submit() ao invés do .execute(). Este método tem um retorno do tipo Future<?>, o qual possuí vários funcionalidades que podem ser usadas
+
+~~~java
+ExecutorService executor = null;
+        try {
+            
+            executor = Executors.newSingleThreadExecutor();
+            
+            executor.execute(new Tarefa());
+            executor.execute(new Tarefa());
+            executor.execute(new Tarefa());
+            Future<?> future = executor.submit(new Tarefa());
+            
+            System.out.println(future.isDone());
+            executor.shutdown();
+            executor.awaitTermination(1, TimeUnit.SECONDS);
+            System.out.println(future.isDone());
+            
+        } catch (Exception e) {
+
+            throw e;
+        }finally{
+
+            if (executor != null){ 
+                
+                executor.shutdownNow();
+            }
+        }
+~~~
+
+### **SingleThread com Callable**
+- não tem o método .run() e sim o método .call()
+- método .call() retorna alguma coisa, seja String, Integer ou qualquer outra classe necessária
+- no método .run() não temos acesso a qualquer valor executado pela tarefa, já com .call() nós temos
+- quando chamamos o método .get() ele espera até que a tarefa finalize para ter algum retorno, logo, se fizermos a chamada desse método, não faz tanto sentido usar .shutdown() e .awaitTermination() após o .get(), com exceção do .shutdown() que houver no bloco finally
+- também podemos usar o .get(1, TimeUnit.SECONDS) com timeout
+- em produção é ideal usar um timeout, pois não sabemos o quão grande é uma tarefa e em quanto tempo ela será executada
