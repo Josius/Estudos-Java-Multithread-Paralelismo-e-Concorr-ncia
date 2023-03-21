@@ -228,19 +228,19 @@ Com a classe **_AtomicInteger_**, não precisamos sincronizar o método run, poi
 Modo elegante de usar:
 ~~~java
 ExecutorService executor = null;
-        try {
-            executor = Executors.newSingleThreadExecutor();
-            executor.execute(new Tarefa());
-            executor.execute(new Tarefa());
-            executor.execute(new Tarefa());
-            executor.awaitTermination(5, TimeUnit.SECONDS);
-        } catch (Exception e) {
-            throw e;
-        }finally{
-            if (executor != null){ 
-                executor.shutdown();
-            }
+    try {
+        executor = Executors.newSingleThreadExecutor();
+        executor.execute(new Tarefa());
+        executor.execute(new Tarefa());
+        executor.execute(new Tarefa());
+        executor.awaitTermination(5, TimeUnit.SECONDS);
+    } catch (Exception e) {
+        throw e;
+    }finally{
+        if (executor != null){ 
+            executor.shutdown();
         }
+    }
 ~~~
 
 Uma grande diferença entre Thread e Executor é que para executar várias tarefas precisamos criar várias threads, com executor podemos usar somente um para várias tarefas.
@@ -250,30 +250,30 @@ Uma grande diferença entre Thread e Executor é que para executar várias taref
 
 ~~~java
 ExecutorService executor = null;
-        try {
+    try {
+        
+        executor = Executors.newSingleThreadExecutor();
+        
+        executor.execute(new Tarefa());
+        executor.execute(new Tarefa());
+        executor.execute(new Tarefa());
+        Future<?> future = executor.submit(new Tarefa());
+        
+        System.out.println(future.isDone());
+        executor.shutdown();
+        executor.awaitTermination(1, TimeUnit.SECONDS);
+        System.out.println(future.isDone());
+        
+    } catch (Exception e) {
+        
+        throw e;
+    }finally{
+        
+        if (executor != null){ 
             
-            executor = Executors.newSingleThreadExecutor();
-            
-            executor.execute(new Tarefa());
-            executor.execute(new Tarefa());
-            executor.execute(new Tarefa());
-            Future<?> future = executor.submit(new Tarefa());
-            
-            System.out.println(future.isDone());
-            executor.shutdown();
-            executor.awaitTermination(1, TimeUnit.SECONDS);
-            System.out.println(future.isDone());
-            
-        } catch (Exception e) {
-
-            throw e;
-        }finally{
-
-            if (executor != null){ 
-                
-                executor.shutdownNow();
-            }
+            executor.shutdownNow();
         }
+    }
 ~~~
 
 ### **SingleThread com Callable**
@@ -283,3 +283,126 @@ ExecutorService executor = null;
 - quando chamamos o método .get() ele espera até que a tarefa finalize para ter algum retorno, logo, se fizermos a chamada desse método, não faz tanto sentido usar .shutdown() e .awaitTermination() após o .get(), com exceção do .shutdown() que houver no bloco finally
 - também podemos usar o .get(1, TimeUnit.SECONDS) com timeout
 - em produção é ideal usar um timeout, pois não sabemos o quão grande é uma tarefa e em quanto tempo ela será executada
+
+~~~java
+ExecutorService executor = null;
+    try {
+
+        executor = Executors.newSingleThreadExecutor();
+
+        Future<String> future = executor.submit(new Tarefa());
+
+        System.out.println(future.isDone());
+        System.out.println(future.get(2, TimeUnit.SECONDS));
+        System.out.println(future.isDone());
+    } catch (Exception e) {
+        
+        throw e;
+    } finally {
+        
+        if (executor != null) {
+            executor.shutdownNow();
+        }
+    }
+~~~
+
+## **Aula 05 - Executores - Parte Dois**
+### **Multithread com Fixed**
+- executor que usa um conjunto de threads numa quantidade pré-determinada, numa quantidade fixa de threads
+- se houver mais tarefas que a quantidade de threads, a tarefa ficará esperando alguma thread liberar, não necessariamente será a thread que finalizou a tarefa 1º
+- indicada para várias tarefas
+```java
+ExecutorService executor = null;
+
+try {
+    executor = Executors.newFixedThreadPool(4);
+    Future<String> future_1 = executor.submit(new Tarefa());
+    Future<String> future_2 = executor.submit(new Tarefa());
+    Future<String> future_3 = executor.submit(new Tarefa());
+    Future<String> future_4 = executor.submit(new Tarefa());
+    Future<String> future_5 = executor.submit(new Tarefa());
+    System.out.println(future_1.get());
+    System.out.println(future_2.get());
+    System.out.println(future_3.get());
+    System.out.println(future_4.get());
+    System.out.println(future_5.get());
+    executor.shutdown();
+} catch (Exception e) {
+    throw e;
+} finally {
+    if(executor != null){
+        executor.shutdownNow();
+    }
+}
+```
+
+### **Multithread com Cached**
+- não precisamos passar o tamanho do pool que usaremos
+- ele cria uma thread nova sempre que precisar
+- se houver alguma thread que não está sendo usada, ele utilizará essa thread
+- por exemplo, foram criadas 3 threads para 3 tarefas, as duas 1ªs tarefas foram executadas cada uma numa thread, na execução da 3ª tarefa, a 1ª thread vagou, logo quem vai executar a 3ª tarefa é a 1ª thread ao invés da 3ª thread
+- threads não utilizadas por mais de 60 segundos são destruídas
+- ele não tem um limite para criar thread, portanto, precisa tomar muito cuidado, pois se houver muitas tarefas, várias threads serão criadas, o que pode virar um problema
+- indicada para poucas tarefas
+```java
+ExecutorService executor = null;
+
+try {
+    
+    executor = Executors.newFixedThreadPool(4);
+    Future<String> future_1 = executor.submit(new Tarefa());
+    System.out.println(future_1.get()); // forçando a terminar a 1ª tarefa antes de executar as outras
+    Future<String> future_2 = executor.submit(new Tarefa());
+    Future<String> future_3 = executor.submit(new Tarefa());
+    System.out.println(future_2.get());
+    System.out.println(future_3.get());
+    executor.shutdown();
+} catch (Exception e) {
+    throw e;
+} finally {
+    if(executor != null){
+        executor.shutdownNow();
+    }
+}
+```
+### **Multithread com InvokeAll**
+- se você tem uma lista, invokeAll() pode executar essa lista de tarefas
+```java
+List<Tarefa> lista = new ArrayList<>();
+for (int i = 0; i < 10; i++) {
+    lista.add(new Tarefa());
+}
+
+List<Future<String>> list = executor.invokeAll(lista);
+
+for (Future<String> future : list) {
+    System.out.println(future.get());
+}
+```
+```java
+List<Tarefa> lista = new ArrayList<>();
+for (int i = 0; i < 10; i++) {
+    lista.add(new Tarefa());
+}
+
+List<Future<String>> list = executor.invokeAll(lista);
+
+for (Future<String> future : list) {
+    System.out.println(future.get());
+}
+```
+### **Multithread com InvokeAny**
+- recebe lista como o método acima
+- retorna somente uma tarefa da lista, provavelmente a 1ª que terminar a execução
+- retorna String ao invés de um Future
+```java
+List<Tarefa> lista = new ArrayList<>();
+for (int i = 0; i < 10; i++) {
+    lista.add(new Tarefa());
+}
+
+String invokeAny = executor.invokeAny(lista);
+
+System.out.println(invokeAny);
+executor.shutdown();
+```
