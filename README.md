@@ -216,7 +216,6 @@ Com a classe **_AtomicInteger_**, não precisamos sincronizar o método run, poi
 
 ### [Explicação da palavra reservada volatile - até 16:20](https://youtu.be/4bH-XilmJoI?list=PLuYctAHjg89YNXAXhgUt6ogMyPphlTVQG&t=680)
 
-
 ## **Aula 05 - Executores - Parte Um**
 ### **SingleThread com Runnable**
 - semelhante a criar um Thread; instanciamos um objeto, passamos um runnable e executamos o executor
@@ -406,3 +405,38 @@ String invokeAny = executor.invokeAny(lista);
 System.out.println(invokeAny);
 executor.shutdown();
 ```
+## **Aula 05 - Executores - Parte Três**
+### **Scheduled - Agendamento de Executores**
+Agendamos em quando o Executor será exercida.
+
+Determinamos quantas threads usaremos:
+> ``ScheduledExecutorService executor = Executors.newScheduledThreadPool(3);``
+
+Passamos a tarefa, o intervalo de tempo decorrido antes de ser executar a tarefa e a unidade de tempo usada:
+> ``ScheduledFuture<String> future = executor.schedule(new Tarefa(), 2, TimeUnit.SECONDS);``
+
+Por fim, um shutdown para finalizar:
+> `executor.shutdown();`
+
+O mesmo pode ser usado para uma tarefa que use Runnable ao invés de Callable:
+```java
+ScheduledExecutorService executor = Executors.newScheduledThreadPool(3);
+
+System.out.println("1º " + System.currentTimeMillis());
+executor.schedule(new TarefaComRunnable(), 2, TimeUnit.SECONDS);
+
+executor.shutdown();
+```
+
+### **FixedRate**
+Primeiro, passamos a tarefa, depois o tempo que será esperado para executar a 1ª vez, o intervalo de tempo em que a terefa será esperará para ser executada diversas vezes, e a unidade de tempo:
+> ``executor.scheduleAtFixedRate(new TarefaComRunnable(), 0, 1, TimeUnit.SECONDS);``
+
+**NOTA:** se chamarmos o método *.shutdown()*, a tarefa não será executa de diversas vezes com relação ao período passado.
+
+**NOTA 2:** se houver um *.sleep()* na tarefa, o que ocorrerá é o seguinte:
+- se o tempo passado para o método *.sleep()* for maior que o período passado para *.scheduleAtFixedRate()*, o programa não esperará; no caso, acabou uma tarefa, ele executa outra, e assim sucessivamente
+- se o tempo passado para o método *.sleep()* for menor que o período passado para *.scheduleAtFixedRate()*, o programa executará a tarefa com base no período passado no *.scheduleAtFixedRate()*
+  
+### **FixedDelay**
+Diferete do FixedRate, o FixedDelay sempre terá um intervalo determinado pelo período informado entre as tarefas.
