@@ -12,6 +12,7 @@ Várias execuções de código concorrendo pelo mesmo recurso. O recurso pode se
 Spring, Quarkus, JBoss, Wildfly, etc.
 
 Muitas vezes, esses frameworks possuem formas próprias implementadas para lidar com multithread, paralelismo e concorrência. Precisa verificar como eles tratam esses assuntos.
+
 ### **Quando usar?**
 - Processos batch/em lote - grande carga de dados com um processamento pesado e depois gerar um resultado; oriunda de um banco de dados, arquivo, requisição, etc.; paralelismo é usado para processar essa grande quantidade de dados
 - Aplicações que executam no cliente - mobile, desktop; 
@@ -440,3 +441,50 @@ Primeiro, passamos a tarefa, depois o tempo que será esperado para executar a 1
   
 ### **FixedDelay**
 Diferete do FixedRate, o FixedDelay sempre terá um intervalo determinado pelo período informado entre as tarefas.
+
+## **Aula 06 - Cyclic Barrier**
+### **Para que serve? Quando usar?**
+- várias threads executando em paralelo
+- enquanto elas estão em execução, se houver um momento onde uma deva esperar pela outra
+
+**Exemplo:**
+Temos 3 threads executando tarefas distintas, mas num certo ponto durante a execução dessas threads, precisamos forçar que essas threads esperem umas pelas outras. Então, digamos a thread 2 chega em determinado ponto e aguarda outra thread chegar, em seguida a thread 1 chega no mesmo ponto que a thread 2 e as duas esperam a thread 3 chegar no mesmo ponto que elas. Quando a última thread chegar no ponto determinado, podemos continuar a execução, encerrar o programa, ou qualquer outra coisa relevante para alcançar o objetivo. Neste caso, estamos sincronizando as threads.
+
+O valor numérico entre parênteses é o número de participantes/threads que serão barrados pelo CyclicBarrier:
+> `CyclicBarrier cyclicBarrier = new CyclicBarrier(3);`
+
+### **Número de participantes**
+```java
+Runnable r1 = () -> {
+    System.out.println(432d*3d);
+    await(cyclicBarrier);
+    System.out.println("Terminei - r1");
+};
+Runnable r2 = () -> {
+    System.out.println(Math.pow(3d, 14d));    
+    await(cyclicBarrier);
+    System.out.println("Terminei - r2");
+};
+Runnable r3 = () -> {
+    System.out.println(45d*127d/12d);
+    await(cyclicBarrier);
+    System.out.println("Terminei - r3");
+};
+```
+No código de exemplo, a 1ª thread que chegar no await ficará esperando as outras chegarem até completarem a quantidade de participantes do cyclicBarrier.
+
+Talvez usar um try-catch nestes casos:
+- se houver menos participantes do que indicado na instanciação da classe, o programa fica esperando chegar alguma thread.
+- se houver mais participantes que o informado, o programa fica em execução, mas não retorna o resultado. 
+
+### **Ação final**
+Após todas as threads alcançarem o ponto em comum, queremos que seja executada uma ação única sobre todas as threads e seus resultados.
+
+>`CyclicBarrier cyclicBarrier = new CyclicBarrier(3, acaoFinal);`
+
+Podemos passar a ação final na instanciação da classe CyclicBarrier. Ela recebe um Runnable, logo, podemos usar uma função lambda. 
+
+### **Cíclico**
+Por que cíclico? Pq pode executar a mesma ação várias vezes. Ele não encerra após as threads chamarem o *.await()*. 
+
+Podemos ter uma tarefa que não é finalização, e sim sumarização. Ver código: *Aula06_3_CyclicBarrierCiclico.java*.
