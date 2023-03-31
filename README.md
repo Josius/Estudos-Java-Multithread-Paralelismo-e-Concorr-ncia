@@ -488,3 +488,57 @@ Podemos passar a ação final na instanciação da classe CyclicBarrier. Ela rec
 Por que cíclico? Pq pode executar a mesma ação várias vezes. Ele não encerra após as threads chamarem o *.await()*. 
 
 Podemos ter uma tarefa que não é finalização, e sim sumarização. Ver código: *Aula06_3_CyclicBarrierCiclico.java*.
+
+## **Aula 07 - Count Down Latch**
+### **Para que serve? Quando usar?**
+Quando houver múltiplas threads executando, sejam tarefas iguais ou distintas, e queremos que após uma certa quantidade de vezes que essas threads forem executadas, queremos executar um ou várias outras coisas. Um exemplo simples, temos uma execução acontecendo inúmeras vezes, e queremos que algo acontece a cada 10 execuções dessa thread, usamos Count Down Latch.
+
+### **Explicação do Exemplo**
+Queremos que a cada 3 execuções de *r1*, o valor do *contadorI* mude.
+
+Exemplo:
+```java
+public class Aula07_1_CountDownLatch {
+    
+    private static volatile int contadorI = 0;
+    public static void main(String[] args) {
+        
+        ScheduledExecutorService executor = Executors.newScheduledThreadPool(3);
+
+        Runnable r1 = () -> {
+            int contadorJ = new Random().nextInt(100);
+            int contadorX = contadorI * contadorJ;
+            System.out.println(contadorI + " x " + contadorJ + " = " + contadorX);
+        };
+
+        executor.scheduleAtFixedRate(r1, 0, 1, TimeUnit.SECONDS);
+
+        while(true){
+            sleep();
+            contadorI = new Random().nextInt(100);
+        }
+    }
+
+    private static void sleep(){
+
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+### **Usando somente uma chamada para o método *.await()***
+- toda vez que r1 executar vamos chamar o *countdown()*
+- ao invés de chamar o métod *sleep()*,vamos chamar o *await()*.
+- ele fica parado até que *latch.down()*, encontrado em r1, execute 3 vezes
+- sua desvantagem é que ele não é reutilizável, ou seja, no exemplo, ele só imprimirá no terminal o mesmo valor 3 vezes; após isso, todas as saídas são aleatórias.
+- isso acontece porque ele não reinicia a contagem regressiva; para isso, criar um novo objeto dessa classe, por exemplo, dentro do while
+
+[Modo mais simples](./Aula07_1_CountDownLatch.java)
+
+### **Usando vários *.await()***
+Podemos ter várias tarefas chamando o countdown e chamando o await:
+
+[Usando vários *.await()*](./Aula07_2_CountDownLatch.java)
