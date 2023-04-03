@@ -542,3 +542,26 @@ public class Aula07_1_CountDownLatch {
 Podemos ter várias tarefas chamando o countdown e chamando o await:
 
 [Usando vários *.await()*](./Aula07_2_CountDownLatch.java)
+
+## **Aula 08 - Semáforos**
+### **Para que serve?**
+Temos algumas ferramentas em java para lidar com a concorrência entre multiplas threads, seja limitando ou fazendo algum controle. 
+
+O semáforo é mais uma ferramenta para ajudar no controle dessa concorrência entre paralelismo.
+
+### **Quando usar?**
+Usaremos quando soubermos a quantidade de threads que possam executar um trecho de código ao mesmo tempo. É uma barreira que permite ou não que uma thread continue seu processamento baseada na quantidade de threads que você permite que prossigam.
+
+### **Criando um semáforo**
+> ``Semaphore SEMAFORO = new Semaphore(permits:0);``
+
+Dentro do contrutor passamos um valor numérico referente a quantas threads podem passar pelo semáforo ao mesmo tempo. 
+
+### **Método .acquire()**
+Quando a thread chama o método *.acquire()* ela tentará passar pelo semáforo. Se a quantidade permitida não estiver completa, a thread passará, do contrário terá que aguardar para poder passar no semáforo.
+
+### **Método .release()**
+Precisamos chamar esse método após a execução da thread para liberar o semáforo, do contrário o semáforo não é liberado e não passa mais nenhuma thread por ele.
+
+### **Método .tryAcquire()**
+Passamos para ele quanto tempo queremos que ele fique esperando. Então, a thread tenta adquirir uma vaga no semáforo em um tempo máximo determinado.
