@@ -565,3 +565,36 @@ Precisamos chamar esse método após a execução da thread para liberar o semá
 
 ### **Método .tryAcquire()**
 Passamos para ele quanto tempo queremos que ele fique esperando. Então, a thread tenta adquirir uma vaga no semáforo em um tempo máximo determinado.
+
+## **Aula 09 - Locks**
+### **Para que serve?**
+Em situações em que temos um recurso que está sendo acessado ou modificado por mais de uma thread ao mesmo tempo, este é um recurso compartilhado, e queremos evitar que várias dessas threads consigam alterar/modificar/ler/acessar esse recurso ao mesmo tempo, usaremos os *Locks*.
+- **recurso:** uma variável, um acesso ao BD, chamada externa via rede, acessar um arquivo
+
+### **ReentrantLock**
+Bom, no exemplo do código sem o *lock*, a saída pode ser repetida. Já com o *lock*, ao usarmos o método *__.lock()__* no começo da thread e o método *__.unlock()__* no fim da thread, a saída não será repetida. 
+
+### **Como funciona o lock**
+- a 1ª thread que for executar obterá o *__.lock()__* e as threads seguintes não
+- as que chegarem depois ficarão esperando a thread com o *lock* terminar de executar
+- quando a 1ª thread terminar de executar, ela chamará o *__.unlock()__* e liberará o *lock* para a próxima thread na fila
+- *lock* é semelhante ao semáforo mas com uma vaga só
+
+### **Porque usar o lock ao invés do Syncronized?**
+- muito mais flexível
+- podemos chamar o *__.lock()__* e o *__.unlock()__* em linhas diferentes
+- *syncronized* tem um bloco, o qual não permite que escolhamos onde inicia e onde termina
+- podemos até chamar o *__.unlock()__* em uma outra classe/método, só precisando passar como parâmetro
+- podemos chamar o *__.lock()__* várias vezes, entretanto, precisamos chamar a mesma quantidade de vezes o *__.unlock()__*
+
+### **Outros métodos**
+- **tryLock()** - retorna um boolean para saber se conseguimos pegar o *lock* ou não
+- **tryLock(time, unit)** - determinamos o tempo decorrido para pegar o *lock*, se conseguiu retorna true, do contrário retorna false
+
+### **ReentrantReadWriteLock**
+- usamos *__.writeLock()__* e *__.readLock()__*.
+- podemos chamar o *__.writeLock().lock()__* várias vezes, entretanto, precisamos chamar a mesma quantidade de vezes o *__.writeLock().unlock()__*
+
+**.writeLock()** - durante a execução da thread de escrita, ninguém atrapalhará ela, ou seja, ninguém entrará no meio da execução da thread e alterará algo durante a execução da thread que chamou o *__.writeLock()__*. Isso acontece pq quando uma thread pega o *writeLock*, nenhuma outra thread conseguirá pegar *writeLock* e nem o *readLock*. Lock de escrita é exclusivo.
+
+**.readLock()** - já o *.readLock* não ocorre o mesmo que o *.writeLock*. Ele não bloqueia um outro lock de leitura, desta forma, podemos ter um milhão de threads obtendo o lock de leitura, todas elas ao mesmo tempo. Ele só garante que enquanto uma thread estiver lendo, nenhuma outra thread irá escrever até o fim da leitura. Lock de leitura não é exclusivo.
