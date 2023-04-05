@@ -598,3 +598,18 @@ Bom, no exemplo do código sem o *lock*, a saída pode ser repetida. Já com o *
 **.writeLock()** - durante a execução da thread de escrita, ninguém atrapalhará ela, ou seja, ninguém entrará no meio da execução da thread e alterará algo durante a execução da thread que chamou o *__.writeLock()__*. Isso acontece pq quando uma thread pega o *writeLock*, nenhuma outra thread conseguirá pegar *writeLock* e nem o *readLock*. Lock de escrita é exclusivo.
 
 **.readLock()** - já o *.readLock* não ocorre o mesmo que o *.writeLock*. Ele não bloqueia um outro lock de leitura, desta forma, podemos ter um milhão de threads obtendo o lock de leitura, todas elas ao mesmo tempo. Ele só garante que enquanto uma thread estiver lendo, nenhuma outra thread irá escrever até o fim da leitura. Lock de leitura não é exclusivo.
+
+## **Aula 10 - Synchronous Queue e Exchanger**
+### **Para que serve?**
+Synchronous Queue (Fila Sincrona) e Exchanger (Permutador) trocam informações entre threads. Há outras classes para fazer a troca de informação entre threads, como BlockingQueues e classes de coleções voltadas para isso entrentato, essas duas classes são mais especializadas para essa função, a troca de informação entre duas ou mais threads.
+
+### **Synchronous Queue**
+Trabalha com duas threads, uma para colocar algo na fila, outra thread para retirar da fila. Se acaso não tivermos ambas, uma chamando **.put()** e outra chamando o **.take()**, o programa executa mas não consegue fazer nada. Ela age como se fosse uma fila que sempre fica vazia, pois só consegue colocar um elemento quando tem outra thread para retirar.
+
+- Temos também o método **.offer(e, timeout, unit)** o qual funciona como o **.put()** porém, com ele podemos determinar um tempo de espera para colocar o elemento '*e*' na fila. Retorna *true* ou *false*.
+
+- Temos também o método **.poll(timeout, unit)** o qual funciona como o **.take()** porém, com ele podemos determinar um tempo de espera para retirar da fila. 
+
+- Então, se acabou o tempo determinado no método **.offer()** e nem o **.take()** ou o **.poll()** não retiraram nada da fila, o método **.offer()** retorna *false*;
+
+### **Exchanger**
