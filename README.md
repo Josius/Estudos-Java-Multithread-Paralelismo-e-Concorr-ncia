@@ -613,3 +613,12 @@ Trabalha com duas threads, uma para colocar algo na fila, outra thread para reti
 - Então, se acabou o tempo determinado no método **.offer()** e nem o **.take()** ou o **.poll()** não retiraram nada da fila, o método **.offer()** retorna *false*;
 
 ### **Exchanger**
+Troca literalmente de informação entre threads. Enquanto uma thread entrega uma tarefa, uma outra thread retorna com o que foi entregue pela 1ª thread, e vice-versa. Ou seja, há uma permutação de informações entre as threads, então a 1ª thread entrega algo para a 2ª thread, e a 2ª thread entrega algo para a 1ª thread.
+
+## **Aula 11 - Conceitos Importantes de Multithread Usando Java**
+### **Produtor-Consumidor**
+É quando temos uma tarefa que está produzindo conteúdo/resultado, ou seja, está criando alguma coisa e alocando em uma fila, este é o Produtor.
+
+E temos também o Consumidor, que é quem está retirando os elementos da fila e tratando-os.
+
+Não necessariamente estaremos usando mais de uma thread, pode ocorrer de uma única thread estar fazendo as duas coisas (Produtor/Consumidor). É um problema que envolve concorrência, ou seja, teremos recursos sendo compartilhados e podem causar algum tipo de problema.
