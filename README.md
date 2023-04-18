@@ -622,3 +622,25 @@ Troca literalmente de informação entre threads. Enquanto uma thread entrega um
 E temos também o Consumidor, que é quem está retirando os elementos da fila e tratando-os.
 
 Não necessariamente estaremos usando mais de uma thread, pode ocorrer de uma única thread estar fazendo as duas coisas (Produtor/Consumidor). É um problema que envolve concorrência, ou seja, teremos recursos sendo compartilhados e podem causar algum tipo de problema.
+
+**Condição de Concorrência (Race Condition):** A fila atinge o tamanho máximo (ou mínimo) e tanto o Produtor quanto o Consumidor estão dormindo/pausados -
+[**EXPLICAÇÃO**](https://youtu.be/Y7niN7cMdgY?list=PLuYctAHjg89YNXAXhgUt6ogMyPphlTVQG&t=669)
+
+[**DEADLOCK**](https://youtu.be/Y7niN7cMdgY?list=PLuYctAHjg89YNXAXhgUt6ogMyPphlTVQG&t=925) - Uma thread esperando pela outra mas elas não vão seguir em frente porque ambas estão achando que executaram corretamente, mas na realidade elas travaram a si próprias. Sendo assim, uma não vai produzir e a outra não vai consumir.
+
+### **Região Crítica (Critical Section)**
+Região crítica é exatamente onde a concorrência existe, onde ela está acontecendo. No código de exemplo, a região crítica é composta pelas partes do código que acessam as variáveis *LISTA*, *produzindo* e *consumindo*. Essas 3 variáveis são concorridas entre as threads, que acessam e alteram essas variáveis.
+
+### **Mutex - Exclusão Mútua (Mutual Exclusion)**
+Para resolver o problema da região crítica, utilizamos o mutex, o qual faz o seguinte:
+
+Quando a 1ª thread estiver acessando os recursos compartilhados, a outra thread não conseguirá acessar.
+
+No código, utilizamos um *Lock* em cada parte do código que estiver acessando a região crítica. Dessa forma, impedimos de ocorrer o DeadLock.
+
+### **Usando as Ferramentas Certas**
+Por Java ser uma linguagem de alto nível há diversos recursos prontos para usarmos na solução de determinados problemas, então, para o código de exemplo, vamos usar esses recursos para o problema em questão. Ver arquivo *__Aula11_3_ProdutorConsumidor.java__* ver o exemplo.
+
+**Executores** - para cenários em que precisamos executar algo de tempos em tempos.
+
+**BlockingQueue, por exemplo** - precisa de uma variável global para ser lida por mais de uma thread e precisa ser lida várias vezes. O ideal é usar uma coleção que seja voltada para esse cenário.
