@@ -644,3 +644,13 @@ Por Java ser uma linguagem de alto nível há diversos recursos prontos para usa
 **Executores** - para cenários em que precisamos executar algo de tempos em tempos.
 
 **BlockingQueue, por exemplo** - precisa de uma variável global para ser lida por mais de uma thread e precisa ser lida várias vezes. O ideal é usar uma coleção que seja voltada para esse cenário.
+
+## **Aula 12 - Mais Opções Multithread com Java**
+### **Classes Timer e TimerTask**
+Duas classes que foram completamente substituídas pelos serviços de **Executors**. Funcionam de forma similar, mas atualmente usamos executores ao invés dessas duas classes.
+
+### **Completable Future**
+É uma forma de iniciar um processamento assíncrono pois, inicialmente chamamos o *Completable Future*, em seguida continuamos com a execução do código onde podemos usar diversos métodos da própria classe e por fim, retornamos o processo que estava executando assincronamente. Ou seja, chamamos um método que irá executar um processo assíncrono mas o código continuará executando na thread principal. 
+
+### **Streams Paralelos**
+Mais uma forma de trabalhar com streams paralelos. 
